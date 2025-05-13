@@ -1,0 +1,35 @@
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 5 1/7 * *'
+jobs:
+  image-build-push:
+    strategy:
+      fail-fast: true
+      matrix:
+        image_type: [vanilla, oxide]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./build-image.sh
+        env:
+          IMAGE_TYPE: ${{ matrix.image_type }}
+          GIT_REF_NAME: ${{ github.ref_name }}
+          GIT_SHA: ${{ github.sha }}
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ vars.DOCKERIO_USERNAME }}
+          password: ${{ secrets.DOCKERIO_TOKEN }}
+      - run: docker push --all-tags ghcr.io/${{ github.repository_owner }}/rust-dedicated-server
+      - run: docker push --all-tags docker.io/${{ vars.DOCKERIO_USERNAME }}/rust-dedicated-server
+
+    permissions:
+      packages: write
