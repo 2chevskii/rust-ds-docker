@@ -26,7 +26,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - uses: docker/login-action@v3
         with:
-          registry: ghcr.io
+          registry: docker.io
           username: ${{ vars.DOCKERIO_USERNAME }}
           password: ${{ secrets.DOCKERIO_TOKEN }}
       - run: docker push --all-tags ghcr.io/${{ github.repository_owner }}/rust-dedicated-server
