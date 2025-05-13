@@ -10,6 +10,7 @@ jobs:
       fail-fast: true
       matrix:
         image_type: [vanilla, oxide]
+      max-parallel: 1
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
